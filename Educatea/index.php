@@ -1,4 +1,5 @@
 <?php
+    session_start();
 require_once "funciones.php";
 // Datos de conexión a la base de datos
 $conexion = conexion();
@@ -7,43 +8,44 @@ if (isset($_POST['login'])) {
   // Obtener los valores del formulario
   $usuario = $_POST['usuario'];
   $password = $_POST['contraseña']; // Obtener la contraseña sin encriptar
-  $nombre = $_POST['nombre'];
-  $apellido = $_POST['apellido'];
-  $email = $_POST['email'];
-  $rol = $_POST['rol'];
-
+  
   // Encriptar la contraseña introducida por el usuario
   $password = md5($password);
 
   // Verificar que el usuario y la contraseña sean correctos
-  $sql = "SELECT * FROM usuarios WHERE usuario='$nombre' AND contraseña='$password'";
-   $result = $conexion->query($sql);
+  $sql = "SELECT * FROM usuarios WHERE usuario='$usuario' AND contraseña='$password'";
+  $result = $conexion->query($sql);
 
-  if (mysqli_num_rows($result) > 0) {
+  if ($result->num_rows > 0) {
     // Obtener el rol del usuario
-    $usuario = mysqli_fetch_assoc($result);
+    $usuario = $result->fetch_assoc();
     $rol = $usuario['rol'];
 
     // Almacenar el rol del usuario en una variable de sesión
+
+    $_SESSION['usuario'] = $usuario;
     $_SESSION['rol'] = $rol;
-// Redirigir al usuario a una página de inicio específica dependiendo de su rol
-if ($rol == 'alumno') {
-  header('Location: inicio_alumno.php');
-} elseif ($rol == 'profesor') {
-  header('Location: inicio_profesor.php');
-} elseif ($rol == 'director') {
-  header('Location: inicio_director.php');
-} else {
-  // Si el rol del usuario no es válido, mostrar un mensaje de error
-  $error = "Rol de usuario no válido.";
-}
-  
-    exit;
-} else {
+
+    // Redirigir al usuario a una página de inicio específica dependiendo de su rol
+    if ($rol == 'alumno') {
+      header('Location: roles/inicio_alumno.php');
+      exit;
+    } elseif ($rol == 'profesor') {
+      header('Location: roles/inicio_profesor.php');
+      exit;
+    } elseif ($rol == 'director') {
+      header('Location: roles/inicio_director.php');
+      exit;
+    } else {
+      // Si el rol del usuario no es válido, mostrar un mensaje de error
+      $error = "Rol de usuario no válido.";
+    }
+  } else {
     // Si el usuario y la contraseña no son correctos, mostrar un mensaje de error
     $error = "Nombre de usuario o contraseña incorrectos.";
-    }
+  }
 }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -63,10 +65,8 @@ if ($rol == 'alumno') {
     <input type="submit" value="Iniciar sesión" name="login">
     <a href="registro.php" >Registrarse</a>
     <?php if(isset($error)) { ?>
-  <p class="error"><?php echo $error; ?></p>
-<?php } ?>
+      <p class="error"><?php echo $error; ?></p>
+    <?php } ?>
   </form>
-
 </body>
 </html>
-
