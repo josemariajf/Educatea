@@ -1,0 +1,86 @@
+/* Estilos para todo el documento */
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 0;
+  }
+/* Estilos para el encabezado */
+h1 {
+    background-color: #003366;
+    color: #fff;
+    font-size: 36px;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  form {
+    margin: auto;
+    max-width: 500px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  
+  input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Estilo para el elemento <select> */
+#rol {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* Estilo para las opciones <option> */
+#rol option {
+  background-color: #fff;
+  color: #333;
+  font-size: 16px;
+}
+
+
+  input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  a {
+    color: #006699;
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+
+  
+  

@@ -1,0 +1,77 @@
+/* Estilos para todo el documento */
+body {
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Estilos para el encabezado */
+h1 {
+  background-color: #003366;
+  color: #fff;
+  font-size: 36px;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Estilos para el formulario */
+form {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  margin: 20px auto;
+  max-width: 400px;
+  padding: 20px;
+}
+
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="password"] {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: block;
+  font-size: 16px;
+  margin-bottom: 20px;
+  padding: 10px;
+  width: 100%;
+}
+
+/* Estilos para el botón de inicio de sesión */
+input[type="submit"] {
+  background-color: #006699;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 10px;
+  transition: all 0.2s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #005588;
+}
+
+/* Estilos para el enlace de registro */
+a {
+  color: #006699;
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
