@@ -6,8 +6,7 @@ $conexion = conexion();
 
 
 $usuario = $_SESSION["usuario"]; // Suponiendo que el nombre de la variable de sesión que contiene el usuario es "usuario"
-$query = "SELECT nombre, apellido, rol FROM usuarios where usuario= '$usuario'";
-$resultado = mysqli_query($conexion, $query);
+$resultado = $conexion-> query("SELECT nombre, apellido, rol FROM usuarios WHERE id = '".$usuario['id']."'");
 
 // Verificar si se pudo realizar la consulta
 if (!$resultado) {
@@ -16,10 +15,12 @@ if (!$resultado) {
 }
 
 // Obtener el nombre real del usuario a partir del resultado de la consulta
-$registro = mysqli_fetch_assoc($resultado);
-$nombre = $registro['nombre'];
-$apellido = $registro['apellido'];
-$rol = $registro['rol'];
+
+$usu = $resultado->fetch_assoc();
+$nombre = $usu['nombre'];
+$apellido = $usu['apellido'];
+$rol = $usu['rol'];
+
 
 
 if (isset($_POST['logout'])) {

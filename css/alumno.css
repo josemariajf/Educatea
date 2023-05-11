@@ -1,0 +1,19 @@
+/* Estilos para todo el documento */
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 0;
+  }
+  
+  /* Estilos para el encabezado */
+  h1 {
+    background-color: #003366;
+    color: #fff;
+    font-size: 36px;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+  
