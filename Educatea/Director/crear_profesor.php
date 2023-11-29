@@ -1,9 +1,14 @@
 <?php
-require_once "funciones.php";
+session_start();
+require_once "../funciones.php";
 
+// Datos de conexión a la base de datos
 $conexion = conexion();
+
+// Inicializar la variable de error
 $error = '';
 
+// Procesar el formulario de registro si se ha enviado
 if (isset($_POST['register'])) {
     $usuario = $_POST['usuario'];
     $password = $_POST['contraseña'];
@@ -12,6 +17,7 @@ if (isset($_POST['register'])) {
     $email = $_POST['email'];
     $rol = $_POST['rol'];
 
+    // Verificar que ambas contraseñas coincidan en el lado del servidor
     $confirmPassword = $_POST['confirmar_contraseña'];
 
     if ($password !== $confirmPassword) {
@@ -19,48 +25,53 @@ if (isset($_POST['register'])) {
     } elseif (strlen($password) < 5 || strlen($password) > 10) {
         $error = "La contraseña debe tener entre 5 y 10 caracteres.";
     } else {
-        // Cifrar la contraseña con MD5 (no se recomienda por motivos de seguridad)
+        // Si no hay desajuste de contraseñas y la longitud de la contraseña es válida, procede con el registro
         $password = md5($password);
-
-        $sql = "INSERT INTO usuarios (usuario, contrasena, nombre, apellido, correo_electronico, rol_id) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conexion->prepare($sql);
+        // Utilizar sentencia preparada para evitar problemas de SQL injection
+        $stmt = $conexion->prepare("INSERT INTO usuarios (usuario, contraseña, nombre, apellido, email, id_rol) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssss", $usuario, $password, $nombre, $apellido, $email, $rol);
 
         if ($stmt->execute()) {
-            header('Location: index.php');
+            // Si se inserta correctamente, redirige al usuario a la página de gestión de profesores
+            header('Location: gestionar_profesor.php');
             exit;
         } else {
-            $error = "Ha habido un error al registrar al usuario.";
+            $error = "Ha habido un error al registrar al usuario: " . $stmt->error;
         }
+        $stmt->close();
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Registro en E-Ducatea</title>
-    <link href="../css/registrocss.css" rel="stylesheet" />
+    <link href="../../css/registrocss.css" rel="stylesheet" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript">
+        // Función para validar la coincidencia de contraseñas
         function validatePassword() {
+            // Obtener el valor de la contraseña y confirmar contraseña
             var password = document.getElementById("contraseña").value;
             var confirmPassword = document.getElementById("confirmar_contraseña").value;
             var errorDiv = document.getElementById("password-error");
 
+            // Comprobar si las contraseñas no coinciden
             if (password !== confirmPassword) {
                 errorDiv.innerHTML = "Las contraseñas no coinciden.";
-                return false;
+                return false; // Impedir la presentación del formulario
             } else {
-                errorDiv.innerHTML = "";
-                return true;
+                errorDiv.innerHTML = ""; // Limpiar cualquier mensaje de error anterior
+                return true; // Permitir la presentación del formulario
             }
         }
     </script>
 </head>
+
 <body>
-    <h1>Registro en E-Ducatea como alumno</h1>
+    <h1>Registro en E-Ducatea como Profesor</h1>
     <form method="post" onsubmit="return validatePassword();">
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required>
@@ -77,20 +88,27 @@ if (isset($_POST['register'])) {
         <div>
             <label for="rol">Rol:</label>
             <select id="rol" name="rol">
-                <?php
-                $result = $conexion->query("SELECT rol_id, nombre_rol FROM roles");
-                while ($row = $result->fetch_assoc()) {
-                    echo "<option value='" . $row['rol_id'] . "'>" . $row['nombre_rol'] . "</option>";
-                }
-                ?>
-            </select>
+    <?php
+    // Consulta modificada para seleccionar solo el rol "alumno"
+    $result = $conexion->query("SELECT id_rol, nombre_rol FROM roles WHERE nombre_rol = 'profesor'");
+    
+    while ($row = $result->fetch_assoc()) {
+        echo "<option value='" . $row['id_rol'] . "'>" . $row['nombre_rol'] . "</option>";
+    }
+    ?>
+</select>
+
         </div>
         <div id="password-error" style="color: red;"></div>
         <input type="submit" value="Registrarse" name="register">
-        <a href="index.php">¿Ya tienes una cuenta? Inicia sesión aquí.</a>
+        <?php if (isset($error)) { ?>
+            <?php echo $error; ?>
+        <?php } ?>
+        <a href="gestionar_profesor.php">Volver a la gestión de profesor.</a>
         <?php if (isset($error)) { ?>
             <?php echo $error; ?>
         <?php } ?>
     </form>
 </body>
+
 </html>

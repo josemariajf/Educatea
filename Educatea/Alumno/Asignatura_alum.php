@@ -33,7 +33,8 @@ while ($fila = $resultado->fetch_assoc()) {
     echo "<td>".$fila["nombre_asignatura"]."</td>";
     echo "<td>".$fila["codigo_asignatura"]."</td>";
     echo "<td>".$fila["descripcion_asignatura"]."</td>";
-    echo "<td><a href='asignatura.php?id=".$fila["id_asignatura"]."'><button>Ver asignatura</button></a></td>";
+    echo "<td><a href='Asignaturas/asignatura.php?id=".$fila["id_asignatura"]."'>
+    <button>Ver asignatura</button></a></td>";
     echo "</tr>";
 }
 

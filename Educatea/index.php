@@ -1,72 +1,80 @@
 <?php
-    session_start();
+session_start();
 require_once "funciones.php";
-// Datos de conexión a la base de datos
+
 $conexion = conexion();
-// Procesar el formulario de inicio de sesión si se ha enviado
+$error = '';
+
 if (isset($_POST['login'])) {
-  // Obtener los valores del formulario
-  $usuario = $_POST['usuario'];
-  $password = $_POST['contraseña']; // Obtener la contraseña sin encriptar
-  
-  // Encriptar la contraseña introducida por el usuario
-  $password = md5($password);
+    $usuario = $_POST['usuario'];
+    $password = $_POST['contrasena'];
 
-  // Verificar que el usuario y la contraseña sean correctos
-  $sql = "SELECT * FROM usuarios WHERE usuario='$usuario' AND contraseña='$password'";
-  $result = $conexion->query($sql);
+    // Consulta preparada para evitar la inyección SQL y obtener información de ambas tablas
+    $sql = "SELECT usuarios.usuario_id, usuarios.usuario, usuarios.contrasena, usuarios.nombre, usuarios.apellido, usuarios.correo_electronico, roles.nombre_rol
+            FROM usuarios
+            INNER JOIN roles ON usuarios.rol_id = roles.rol_id
+            WHERE usuarios.usuario = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("s", $usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-  if ($result->num_rows > 0) {
-    // Obtener el rol del usuario
-    $usuario = $result->fetch_assoc();
-    $rol = $usuario['rol'];
+    if ($result->num_rows > 0) {
+        $usuario = $result->fetch_assoc();
 
-    // Almacenar el rol del usuario en una variable de sesión
+        // Verificar la contraseña utilizando password_verify
+        if (md5($password) === $usuario['contrasena']) {
+          // Contraseña correcta, almacenar información en la sesión
+          $_SESSION['usuario'] = $usuario;
+          $_SESSION['rol'] = $usuario['nombre_rol'];
 
-    $_SESSION['usuario'] = $usuario;
-    $_SESSION['rol'] = $rol;
-
-    // Redirigir al usuario a una página de inicio específica dependiendo de su rol
-    if ($rol == 'alumno') {
-      header('Location: roles/inicio_alumno.php');
-      exit;
-    } elseif ($rol == 'profesor') {
-      header('Location: roles/inicio_profesor.php');
-      exit;
-    } elseif ($rol == 'director') {
-      header('Location: roles/inicio_director.php');
-      exit;
+            // Redirigir al usuario a una página de inicio específica dependiendo de su rol
+            switch ($_SESSION['rol']) {
+                case 'alumno':
+                    header('Location: roles/inicio_alumno.php');
+                    break;
+                case 'profesor':
+                    header('Location: roles/inicio_profesor.php');
+                    break;
+                case 'director':
+                    header('Location: roles/inicio_director.php');
+                    break;
+                default:
+                    // Manejar cualquier otro rol según sea necesario
+                    header('Location: roles/inicio_general.php');
+            }
+            exit;
+        } else {
+            // Contraseña incorrecta
+            $error = "Nombre de usuario o contraseña incorrectos.";
+        }
     } else {
-      // Si el rol del usuario no es válido, mostrar un mensaje de error
-      $error = "Rol de usuario no válido.";
+        // Usuario no encontrado
+        $error = "Nombre de usuario o contraseña incorrectos.";
     }
-  } else {
-    // Si el usuario y la contraseña no son correctos, mostrar un mensaje de error
-    $error = "Nombre de usuario o contraseña incorrectos.";
-  }
 }
-
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Iniciar sesión en E-Ducatea</title>
-  <link href="../css/indexcss.css" rel="stylesheet" />
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión en E-Ducatea</title>
+    <link href="../css/indexcss.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <h1>Iniciar sesión en E-Ducatea</h1>
-  <form method="post">
-    <label for="usuario">Nombre de usuario:</label>
-    <input type="text" id="usuario" name="usuario" required>
-    <label for="password">Contraseña:</label>
-    <input type="password" id="contraseña" name="contraseña"  required minlength="5" maxlength="10">
-    <input type="submit" value="Iniciar sesión" name="login">
-    <a href="registro.php" >Registrarse</a>
-    <?php if(isset($error)) { ?>
-      <p class="error"><?php echo $error; ?></p>
-    <?php } ?>
-  </form>
+    <h1>Iniciar sesión en E-Ducatea</h1>
+    <form method="post">
+        <label for="usuario">Nombre de usuario:</label>
+        <input type="text" id="usuario" name="usuario" required>
+        <label for="contrasena">Contraseña:</label>
+        <input type="password" id="contrasena" name="contrasena" required minlength="5" maxlength="255">
+        <input type="submit" value="Iniciar sesión" name="login">
+        <a href="registro.php" >Registrarse</a>
+        <?php if(isset($error)) { ?>
+            <p class="error"><?php echo $error; ?></p>
+        <?php } ?>
+    </form>
 </body>
 </html>

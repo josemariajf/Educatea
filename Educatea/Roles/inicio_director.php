@@ -4,22 +4,19 @@ require_once "../funciones.php";
 // Datos de conexión a la base de datos
 $conexion = conexion();
 
+$usuario = $_SESSION["usuario"];
+$resultado = $conexion->query("SELECT nombre, apellido, rol_id FROM usuarios WHERE usuario_id = '".$usuario['usuario_id']."'");
 
-$usuario = $_SESSION["usuario"]; // Suponiendo que el nombre de la variable de sesión que contiene el usuario es "usuario"
-$resultado = $conexion-> query("SELECT nombre, apellido, rol FROM usuarios WHERE id = '".$usuario['id']."'");
-
-// Verificar si se pudo realizar la consulta
 if (!$resultado) {
     echo "Error al realizar la consulta: " . mysqli_error($conexion);
     exit();
 }
 
-// Obtener el nombre real del usuario a partir del resultado de la consulta
-
 $usu = $resultado->fetch_assoc();
 $nombre = $usu['nombre'];
 $apellido = $usu['apellido'];
-$rol = $usu['rol'];
+var_dump($usuario);
+
 
 
 
@@ -38,10 +35,21 @@ if (isset($_POST['logout'])) {
     <title>Bienvenido/a  en Moodle</title>
   </head>
   <body>
-    <h1>¡Bienvenido/a a <?php echo $nombre ." ". $apellido?>  E-ducatea </h1>
-    <p> Eres un <?php echo $rol?></p>
+    <h1>¡Bienvenido/a director/a <?php echo $nombre ." ". $apellido?>  E-ducatea </h1>
+    
  
     <p>¡Explora todas las opciones de E-ducatea tiene para ofrecerte.</p>
+
+     <!-- Botones para realizar otras acciones -->
+    
+     <button onclick="location.href='../Director/crear_asignatura.php'">Crear Asignatura</button><br/>
+     <button onclick="location.href='../Director/crear_curso.php'">Crear Curso</button><br/>
+     <button onclick="location.href='../Director/gestionar_profesor.php'">Gestionar Profesor</button><br/>
+     <button onclick="location.href='../Director/gestionar_alumno.php'">Gestionar Alumno</button><br/>
+     <button onclick="location.href='../Director/asignar_tutor.php'">Asignar Tutor</button><br/>
+     <button onclick="location.href='../Director/clases/gestionar_clases.php'">Gestionar Clase</button><br/><br/>
+    
+
 
 <form method="post">
            

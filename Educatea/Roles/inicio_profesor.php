@@ -5,21 +5,17 @@ require_once "../funciones.php";
 $conexion = conexion();
 
 
-$usuario = $_SESSION["usuario"]; // Suponiendo que el nombre de la variable de sesión que contiene el usuario es "usuario"
-$resultado = $conexion-> query("SELECT nombre, apellido, rol FROM usuarios WHERE id = '".$usuario['id']."'");
+$usuario = $_SESSION["usuario"];
+$resultado = $conexion->query("SELECT nombre, apellido, rol_id FROM usuarios WHERE usuario_id = '".$usuario['usuario_id']."'");
 
-// Verificar si se pudo realizar la consulta
 if (!$resultado) {
     echo "Error al realizar la consulta: " . mysqli_error($conexion);
     exit();
 }
 
-// Obtener el nombre real del usuario a partir del resultado de la consulta
-
 $usu = $resultado->fetch_assoc();
 $nombre = $usu['nombre'];
 $apellido = $usu['apellido'];
-$rol = $usu['rol'];
 
 
 
@@ -37,15 +33,25 @@ if (isset($_POST['logout'])) {
     <title>Bienvenido/a  en Moodle</title>
   </head>
   <body>
-    <h1>¡Bienvenido/a a <?php echo $nombre ." ". $apellido?>  E-ducatea </h1>
-    <p> Eres un <?php echo $rol?></p>
+    <h1>¡Bienvenido/a profesor/a  <?php echo $nombre ." ". $apellido?>  E-ducatea </h1>
+    
  
          <p>¡Explora todas las opciones de E-ducatea tiene para ofrecerte.</p>
 
+    <!-- Botón para ver alumnos -->
+    <form action="../Profesor/alumnos.php" method="get">
+        <button type="submit">Ver Alumnos</button>
+    </form>
+
+    <!-- Botón para acceder a los cursos -->
+    <form action="../Profesor/cursos.php" method="get">
+        <button type="submit">Ver Cursos</button>
+    </form>
 <form method="post">
            
                 <button type="submit" name="logout">Cerrar sesión</button>
             
         </form>
+        
   </body>
 </html>

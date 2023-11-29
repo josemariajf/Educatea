@@ -1,5 +1,5 @@
 <?php
-require_once "funciones.php";
+require_once "../funciones.php";
 
 $conexion = conexion();
 $error = '';
@@ -22,12 +22,13 @@ if (isset($_POST['register'])) {
         // Cifrar la contraseña con MD5 (no se recomienda por motivos de seguridad)
         $password = md5($password);
 
-        $sql = "INSERT INTO usuarios (usuario, contrasena, nombre, apellido, correo_electronico, rol_id) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO usuarios (usuario, contraseña, nombre, apellido, email, id_rol) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("ssssss", $usuario, $password, $nombre, $apellido, $email, $rol);
 
         if ($stmt->execute()) {
-            header('Location: index.php');
+            // Redirigir a gestionar_alumno.php
+            header('Location: gestionar_alumno.php');
             exit;
         } else {
             $error = "Ha habido un error al registrar al usuario.";
@@ -40,7 +41,7 @@ if (isset($_POST['register'])) {
 <html>
 <head>
     <title>Registro en E-Ducatea</title>
-    <link href="../css/registrocss.css" rel="stylesheet" />
+    <link href="../../css/registrocss.css" rel="stylesheet" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript">
@@ -77,17 +78,20 @@ if (isset($_POST['register'])) {
         <div>
             <label for="rol">Rol:</label>
             <select id="rol" name="rol">
-                <?php
-                $result = $conexion->query("SELECT rol_id, nombre_rol FROM roles");
-                while ($row = $result->fetch_assoc()) {
-                    echo "<option value='" . $row['rol_id'] . "'>" . $row['nombre_rol'] . "</option>";
-                }
-                ?>
-            </select>
+    <?php
+    // Consulta modificada para seleccionar solo el rol "alumno"
+    $result = $conexion->query("SELECT id_rol, nombre_rol FROM roles WHERE nombre_rol = 'alumno'");
+    
+    while ($row = $result->fetch_assoc()) {
+        echo "<option value='" . $row['id_rol'] . "'>" . $row['nombre_rol'] . "</option>";
+    }
+    ?>
+</select>
+
         </div>
         <div id="password-error" style="color: red;"></div>
         <input type="submit" value="Registrarse" name="register">
-        <a href="index.php">¿Ya tienes una cuenta? Inicia sesión aquí.</a>
+        <a href="gestionar_alumno.php">Volver a la gestión de alumno.</a>
         <?php if (isset($error)) { ?>
             <?php echo $error; ?>
         <?php } ?>
