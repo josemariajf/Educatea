@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "../funciones.php";
+require_once "../../funciones.php";
 // Datos de conexión a la base de datos
 $conexion = conexion();
 
@@ -11,50 +11,45 @@ $usuario_id = $_SESSION['usuario']['usuario_id'];
 $queryClasesAlumno = "SELECT clase_id FROM clases_usuarios WHERE usuario_id = ?";
 $stmtClasesAlumno = $conexion->prepare($queryClasesAlumno);
 $stmtClasesAlumno->bind_param("i", $usuario_id);
+$stmtClasesAlumno->execute();
+$resultadoClasesAlumno = $stmtClasesAlumno->get_result();
 
-// Verificar si se pudo preparar la consulta
-if (!$stmtClasesAlumno->execute()) {
-    echo "Error al realizar la consulta de clases del alumno: " . $stmtClasesAlumno->error;
+// Verificar si se pudo realizar la consulta
+if (!$resultadoClasesAlumno) {
+    echo "Error al realizar la consulta de clases del alumno: " . mysqli_error($conexion);
     exit();
 }
 
 // Obtener los ID de las clases a las que pertenece el alumno
-$resultadoClasesAlumno = $stmtClasesAlumno->get_result();
 $clasesAlumno = [];
-
 while ($filaClase = $resultadoClasesAlumno->fetch_assoc()) {
     $clasesAlumno[] = $filaClase['clase_id'];
 }
 
-$stmtClasesAlumno->close();
+// Verificar si hay clases antes de hacer la consulta de asignaturas
+if (!empty($clasesAlumno)) {
+    // Construir la lista de marcadores de posición para IN
+    $inList = implode(',', array_fill(0, count($clasesAlumno), '?'));
 
-// Verificar si el alumno tiene clases
-if (empty($clasesAlumno)) {
-    echo "<p>No hay clases asignadas al alumno.</p>";
-    exit();
+    // Consulta para obtener la información de las asignaturas que están en las clases del alumno
+    $queryAsignaturas = "SELECT a.*
+                        FROM asignaturas a
+                        JOIN asignaturas_clases ac ON a.asignatura_id = ac.asignatura_id
+                        WHERE ac.clase_id IN ($inList)";
+    
+    $stmtAsignaturas = $conexion->prepare($queryAsignaturas);
+
+    // Bind parameters
+    $types = str_repeat('i', count($clasesAlumno));
+    $stmtAsignaturas->bind_param($types, ...$clasesAlumno);
+    
+    $stmtAsignaturas->execute();
+    $resultAsignaturas = $stmtAsignaturas->get_result();
+} else {
+    $resultAsignaturas = false;
 }
-
-// Crear la cláusula IN con marcadores de posición
-$placeholders = implode(',', array_fill(0, count($clasesAlumno), '?'));
-
-// Consulta para obtener la información de las asignaturas que están en las clases del alumno
-$sql = "SELECT a.*
-        FROM asignaturas a
-        JOIN asignaturas_clases ac ON a.asignatura_id = ac.asignatura_id
-        WHERE ac.clase_id IN ($placeholders)";
-$stmtAsignaturas = $conexion->prepare($sql);
-
-// Agregar los valores de los marcadores de posición
-$stmtAsignaturas->bind_param(str_repeat('i', count($clasesAlumno)), ...$clasesAlumno);
-
-// Verificar si se pudo preparar la consulta
-if (!$stmtAsignaturas->execute()) {
-    echo "Error al realizar la consulta de asignaturas: " . $stmtAsignaturas->error;
-    exit();
-}
-
-$resultadoAsignaturas = $stmtAsignaturas->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,20 +68,18 @@ $resultadoAsignaturas = $stmtAsignaturas->get_result();
         <h1>Asignaturas de E-ducatea</h1>
         <?php
         // Verificar si hay asignaturas para mostrar
-        if ($resultadoAsignaturas->num_rows > 0) {
+        if ($resultAsignaturas && $resultAsignaturas->num_rows > 0) {
             // Crear la tabla con estilos de Bootstrap
             echo "<table class='table'>";
             echo "<thead class='thead-dark'><tr><th>ID</th><th>Nombre de la asignatura</th><th>Código</th><th></th></tr></thead><tbody>";
 
             // Mostrar una fila por cada asignatura
-            while ($fila = $resultadoAsignaturas->fetch_assoc()) {
+            while ($fila = $resultAsignaturas->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td>".$fila["asignatura_id"]."</td>";
                 echo "<td>".$fila["nombre_asignatura"]."</td>";
                 echo "<td>".$fila["codigo_asignatura"]."</td>";
-                
-                echo "<td><a class='btn btn-primary' href=tarea/ver_tarea.php?asignatura_id=".$fila["asignatura_id"]."'>Ver Tarea</a></td>";
-
+                echo "<td><a class='btn btn-primary' href='Tarea/tare_alumno.php?id=".$fila["asignatura_id"]."'>Ver Tarea</a></td>";
                 echo "</tr>";
             }
 
@@ -95,7 +88,7 @@ $resultadoAsignaturas = $stmtAsignaturas->get_result();
             echo "<p>No hay asignaturas disponibles para mostrar.</p>";
         }
         ?>
-        <a href="../Roles/inicio_alumno.php" class="btn btn-secondary">Volver a inicio</a>
+        <a href="../alumnos.php" class="btn btn-secondary">Volver a inicio</a>
     </div>
 
     <!-- Agregar el enlace al script de Bootstrap al final del cuerpo -->
