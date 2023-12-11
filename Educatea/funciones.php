@@ -20,7 +20,7 @@ function logout(){
 }
 
 function agregarClase($nombre_clase, $curso) {
-    global $conexion; // Asegúrate de que $conexion esté definido y disponible en este contexto
+    global $conexion;
 
     // Consulta SQL para insertar una nueva clase
     $query = "INSERT INTO Clases (nombre_clase, curso) VALUES (?, ?)";
@@ -37,6 +37,7 @@ function agregarClase($nombre_clase, $curso) {
     // Cerrar la consulta
     $stmt->close();
 }
+
 function obtenerClases() {
     global $conexion;
     $clases = array();
@@ -51,24 +52,61 @@ function obtenerClases() {
 
     return $clases;
 }
-function eliminarClase($clase_id) {
+// En funciones.php
+
+function obtenerUsuariosPorRol() {
     global $conexion;
-    
-    // Escapar el ID para evitar inyección de SQL
-    $clase_id = mysqli_real_escape_string($conexion, $clase_id);
-    
-    // Query para eliminar la clase
-    $query = "DELETE FROM Clases WHERE clase_id = '$clase_id'";
-    
-    // Ejecutar la consulta
-    $resultado = $conexion->query($query);
-    
-    // Verificar si la eliminación fue exitosa
-    if ($resultado) {
-        return true;
-    } else {
-        return false;
+
+    $query = "SELECT * FROM usuarios WHERE rol_id = 2";
+    $result = mysqli_query($conexion, $query);
+
+    $tutores = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $tutores[] = $row;
     }
+
+    return $tutores;
 }
+
+
+function  asignarTutorAClase($clase_id, $tutor_id) {
+    global $conexion;
+
+    $query = "UPDATE clases SET id_tutor = ? WHERE clase_id = ?";
+    $stmt = mysqli_prepare($conexion, $query);
+    mysqli_stmt_bind_param($stmt, "ii", $tutor_id, $clase_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+// En funciones.php
+
+function obtenerTutorDeClase($clase_id) {
+    global $conexion;
+
+    $query = "SELECT id_tutor FROM clases WHERE clase_id = ?";
+    $stmt = mysqli_prepare($conexion, $query);
+    mysqli_stmt_bind_param($stmt, "i", $clase_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $id_tutor);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $id_tutor;
+}
+
+function actualizarTutorDeClase($clase_id, $tutor_id) {
+    global $conexion;
+
+    $query = "UPDATE clases SET id_tutor = ? WHERE clase_id = ?";
+    $stmt = mysqli_prepare($conexion, $query);
+    mysqli_stmt_bind_param($stmt, "ii", $tutor_id, $clase_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+
+
+
+
 
 ?>
