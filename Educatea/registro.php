@@ -74,11 +74,13 @@ if (isset($_POST['register'])) {
         <input type="password" id="contraseña" name="contraseña" required minlength="5" maxlength="10">
         <label for="confirmar_contraseña">Confirmar Contraseña:</label>
         <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required minlength="5" maxlength="10">
-        <div>
+       <div>
             <label for="rol">Rol:</label>
             <select id="rol" name="rol">
                 <?php
-                $result = $conexion->query("SELECT rol_id, nombre_rol FROM roles");
+                // Consulta modificada para seleccionar solo el rol "alumno"
+                $result = $conexion->query("SELECT rol_id, nombre_rol FROM roles WHERE nombre_rol = 'alumno'");
+                
                 while ($row = $result->fetch_assoc()) {
                     echo "<option value='" . $row['rol_id'] . "'>" . $row['nombre_rol'] . "</option>";
                 }
