@@ -1,59 +1,59 @@
 <?php
 session_start();
-require_once "../funciones.php";
+require_once "../../funciones.php";
+
 // Datos de conexión a la base de datos
 $conexion = conexion();
 
 // Obtener el ID del usuario desde la sesión
 $usuario_id = $_SESSION['usuario']['usuario_id'];
 
-// Consulta para obtener las clases del alumno
-$queryClasesAlumno = "SELECT clase_id FROM clases_usuarios WHERE usuario_id = ?";
-$stmtClasesAlumno = $conexion->prepare($queryClasesAlumno);
-$stmtClasesAlumno->bind_param("i", $usuario_id);
+// Consulta para obtener las clases del profesor
+$queryClasesProfesor = "SELECT clase_id FROM clases WHERE id_tutor = $usuario_id";
+$resultadoClasesProfesor = $conexion->query($queryClasesProfesor);
 
-// Verificar si se pudo preparar la consulta
-if (!$stmtClasesAlumno->execute()) {
-    echo "Error al realizar la consulta de clases del alumno: " . $stmtClasesAlumno->error;
+// Verificar si se pudo realizar la consulta
+if (!$resultadoClasesProfesor) {
+    echo "Error al realizar la consulta de clases del profesor: " . mysqli_error($conexion);
     exit();
 }
 
-// Obtener los ID de las clases a las que pertenece el alumno
-$resultadoClasesAlumno = $stmtClasesAlumno->get_result();
-$clasesAlumno = [];
-
-while ($filaClase = $resultadoClasesAlumno->fetch_assoc()) {
-    $clasesAlumno[] = $filaClase['clase_id'];
+// Obtener los ID de las clases a las que pertenece el profesor
+$clasesProfesor = [];
+while ($filaClase = $resultadoClasesProfesor->fetch_assoc()) {
+    $clasesProfesor[] = $filaClase['clase_id'];
 }
 
-$stmtClasesAlumno->close();
-
-// Verificar si el alumno tiene clases
-if (empty($clasesAlumno)) {
-    echo "<p>No hay clases asignadas al alumno.</p>";
-    exit();
-}
-
-// Crear la cláusula IN con marcadores de posición
-$placeholders = implode(',', array_fill(0, count($clasesAlumno), '?'));
-
-// Consulta para obtener la información de las asignaturas que están en las clases del alumno
+// Preparar la consulta para obtener la información de las asignaturas que están en las clases del profesor
 $sql = "SELECT a.*
         FROM asignaturas a
         JOIN asignaturas_clases ac ON a.asignatura_id = ac.asignatura_id
-        WHERE ac.clase_id IN ($placeholders)";
-$stmtAsignaturas = $conexion->prepare($sql);
+        WHERE ac.clase_id IN (";
 
-// Agregar los valores de los marcadores de posición
-$stmtAsignaturas->bind_param(str_repeat('i', count($clasesAlumno)), ...$clasesAlumno);
+// Agregar los marcadores de posición para la lista de clases
+$sql .= implode(",", array_fill(0, count($clasesProfesor), "?"));
+$sql .= ")";
 
-// Verificar si se pudo preparar la consulta
-if (!$stmtAsignaturas->execute()) {
-    echo "Error al realizar la consulta de asignaturas: " . $stmtAsignaturas->error;
+// Preparar la sentencia
+$stmt = $conexion->prepare($sql);
+
+// Verificar si la preparación fue exitosa
+if (!$stmt) {
+    echo "Error al preparar la consulta: " . $conexion->error;
     exit();
 }
 
-$resultadoAsignaturas = $stmtAsignaturas->get_result();
+// Bind los parámetros para los marcadores de posición
+foreach ($clasesProfesor as $key => $value) {
+    $stmt->bind_param("i", $value);
+}
+
+// Ejecutar la consulta
+$stmt->execute();
+
+// Obtener el resultado
+$resultadoAsignaturas = $stmt->get_result();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,18 +84,17 @@ $resultadoAsignaturas = $stmtAsignaturas->get_result();
                 echo "<td>".$fila["asignatura_id"]."</td>";
                 echo "<td>".$fila["nombre_asignatura"]."</td>";
                 echo "<td>".$fila["codigo_asignatura"]."</td>";
-                
-                echo "<td><a class='btn btn-primary' href=tarea/ver_tarea.php?asignatura_id=".$fila["asignatura_id"]."'>Ver Tarea</a></td>";
-
+                echo "<td><a class='btn btn-primary' href='anadir_tarea.php?asignatura_id=".$fila["asignatura_id"]."&clase_id=".$clasesProfesor[0]."'>Añadir Tarea</a></td>";
                 echo "</tr>";
             }
+            
 
             echo "</tbody></table>";
         } else {
             echo "<p>No hay asignaturas disponibles para mostrar.</p>";
         }
         ?>
-        <a href="../Roles/inicio_alumno.php" class="btn btn-secondary">Volver a inicio</a>
+        <a href="../../Roles/inicio_profesor.php" class="btn btn-secondary">Volver a inicio</a>
     </div>
 
     <!-- Agregar el enlace al script de Bootstrap al final del cuerpo -->

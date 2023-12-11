@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once "../funciones.php";
-// Datos de conexión a la base de datos
 $conexion = conexion();
 
 $usuario = $_SESSION["usuario"];
@@ -15,46 +14,57 @@ if (!$resultado) {
 $usu = $resultado->fetch_assoc();
 $nombre = $usu['nombre'];
 $apellido = $usu['apellido'];
-var_dump($usuario);
-
-
-
-
 
 if (isset($_POST['logout'])) {
     session_destroy();
     header('Location: ../index.php');
     exit;
-  }
-
+}
 ?>
-
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Bienvenido/a  en Moodle</title>
-  </head>
-  <body>
-    <h1>¡Bienvenido/a director/a <?php echo $nombre ." ". $apellido?>  E-ducatea </h1>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido/a Educatea</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <div class="jumbotron bg-primary text-center text-white">
+        <h1 class="display-4">Educatea</h1>
+    </div>
+    <div class="container mt-5">
+        <h1>¡Bienvenido/a director/a <?php echo $nombre ." ". $apellido?> en E-ducatea</h1>
     
- 
-    <p>¡Explora todas las opciones de E-ducatea tiene para ofrecerte.</p>
+        <p>¡Explora todas las opciones que E-ducatea tiene para ofrecerte.</p>
 
-     <!-- Botones para realizar otras acciones -->
-    
-     <button onclick="location.href='../Director/crear_asignatura.php'">Crear Asignatura</button><br/>
-     <button onclick="location.href='../Director/crear_curso.php'">Crear Curso</button><br/>
-     <button onclick="location.href='../Director/gestionar_profesor.php'">Gestionar Profesor</button><br/>
-     <button onclick="location.href='../Director/gestionar_alumno.php'">Gestionar Alumno</button><br/>
-     <button onclick="location.href='../Director/asignar_tutor.php'">Asignar Tutor</button><br/>
-     <button onclick="location.href='../Director/clases/gestionar_clases.php'">Gestionar Clase</button><br/><br/>
-    
-
-
-<form method="post">
+        <!-- Botones para realizar otras acciones -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary btn-block" onclick="location.href='../Director/Asignatura/gestionar_asignatura.php'">Gestionar Asignatura</button>
+            </div>
            
-                <button type="submit" name="logout">Cerrar sesión</button>
-            
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary btn-block" onclick="location.href='../Director/profesor/gestionar_profesor.php'">Gestionar Profesor</button>
+            </div>
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary btn-block" onclick="location.href='../Director/Alumno/gestionar_alumno.php'">Gestionar Alumno</button>
+            </div>
+           
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary btn-block" onclick="location.href='../Director/clases/gestionar_clases.php'">Gestionar Clase</button>
+            </div>
+        </div>
+        <br/>
+
+        <form method="post">
+            <button type="submit" name="logout" class="btn btn-danger btn-block">Cerrar sesión</button>
         </form>
-  </body>
+    </div>
+
+    <!-- Scripts de Bootstrap y jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>
