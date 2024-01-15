@@ -39,6 +39,7 @@ if ($id_usuario_profesor !== null) {
 </head>
 
 <body class="bg-light">
+<img src="../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
     <div class="jumbotron bg-primary text-center text-white">
         <h1 class="display-4">Educatea</h1>
     </div>
@@ -70,9 +71,16 @@ if ($id_usuario_profesor !== null) {
         </table>
         <br>
 
-        <!-- Botón para volver a la página anterior utilizando Bootstrap -->
+        <!-- Botón para volver a la página anterior -->
         <a href="clase.php" class="btn btn-secondary mt-3">Volver a inicio</a>
     </div>
+
+
+ <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+ <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
+
 
     <!-- Scripts de Bootstrap y jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

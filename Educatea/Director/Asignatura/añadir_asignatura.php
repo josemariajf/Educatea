@@ -57,11 +57,12 @@ if (isset($_GET['error']) && $_GET['error'] === 'asignatura_existente') {
 
 <body>
 <div class="jumbotron bg-primary text-center text-white">
+<img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
         <h1 class="display-4">Educatea</h1>
     </div>
 
     <div class="container">
-        <h2 class="mb-4">Asignar Clase a Clase</h2>
+        <h2 class="mb-4">Asignar Asignatura a Clase</h2>
 
         <form method="post" action="procesar_asignatura.php" id="form-asignatura" class="border p-3 rounded">
             <input type="hidden" name="clase_id" value="<?php echo $clase_id; ?>">
@@ -85,7 +86,7 @@ if (isset($_GET['error']) && $_GET['error'] === 'asignatura_existente') {
 
         <div id="lista-visual-clases"></div>
 
-        <a href="gestionar_asignatura.php" class="btn btn-link mt-3">Volver a la gestion</a>
+        <a href="gestionar_asignatura.php" class="btn btn-secondary mt-3">Volver a la gestion</a>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -155,7 +156,10 @@ if (isset($_GET['error']) && $_GET['error'] === 'asignatura_existente') {
     }
 </script>
 
-
+        <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
 
 </body>
 

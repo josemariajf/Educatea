@@ -5,6 +5,7 @@ $conexion = conexion();
 
 // Inicializar las variables
 $id_alumno = $usuario_alumno = $nombre_alumno = $apellido_alumno = $email_alumno = '';
+$error_correo = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Procesar la actualización del alumno
@@ -25,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Encriptar la nueva contraseña con MD5
         $hashed_password = md5($nueva_contraseña);
+
+      
 
         // Realizar la actualización en la base de datos utilizando consultas preparadas
         $queryActualizar = "UPDATE usuarios SET 
@@ -75,6 +78,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+
+// Función para verificar si el correo electrónico ya existe en la base de datos, excluyendo el usuario actual
+function correoExistente($conexion, $email, $usuario_id)
+{
+    $sql = "SELECT correo_electronico FROM usuarios WHERE correo_electronico = ? AND usuario_id != ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("si", $email, $usuario_id);
+    $stmt->execute();
+    $stmt->store_result();
+    return $stmt->num_rows > 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -85,27 +99,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Alumno</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script>
+        function validarFormulario() {
+            var usuario = document.getElementById("nuevo_usuario").value;
+            var nombre = document.getElementById("nuevo_nombre").value;
+            var apellido = document.getElementById("nuevo_apellido").value;
+            var correo = document.getElementById("nuevo_email").value;
+
+            // Expresión regular para verificar que solo contiene letras
+            var regex = /^[a-zA-Z]+$/;
+
+            var usuarioError = document.getElementById("usuario-error");
+            var nombreError = document.getElementById("nombre-error");
+            var apellidoError = document.getElementById("apellido-error");
+            var correoError = document.getElementById("correo-error");
+
+            // Restablecer mensajes de error
+            usuarioError.innerHTML = "";
+            nombreError.innerHTML = "";
+            apellidoError.innerHTML = "";
+            correoError.innerHTML = "";
+
+            if (!regex.test(usuario)) {
+                usuarioError.innerHTML = "El usuario solo puede contener letras.";
+                return false;
+            }
+
+            if (!regex.test(nombre)) {
+                nombreError.innerHTML = "El nombre solo puede contener letras.";
+                return false;
+            }
+
+            if (!regex.test(apellido)) {
+                apellidoError.innerHTML = "El apellido solo puede contener letras.";
+                return false;
+            }
+
+            if (correo.trim() === "") {
+                correoError.innerHTML = "El correo electrónico es obligatorio.";
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </head>
 
-<body class="container mt-5">
+<body >
+<div class="jumbotron bg-primary text-center text-white">
+<img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
+        <h1 class="display-4">Educatea</h1>
+    </div>
+    <div class="container mt-5">
     <h2 class="mb-4">Editar Alumno</h2>
 
-    <form method="post" action="editar_alumno.php">
+    <form method="post" action="editar_alumno.php" onsubmit="return validarFormulario();">
         <input type="hidden" name="id_alumno" value="<?php echo $id_alumno; ?>">
 
         <div class="form-group">
             <label for="nuevo_usuario">Nuevo Usuario:</label>
-            <input type="text" class="form-control" name="nuevo_usuario" value="<?php echo $usuario_alumno; ?>" required>
+            <input type="text" class="form-control" name="nuevo_usuario" id="nuevo_usuario" value="<?php echo $usuario_alumno; ?>" required>
+            <div id="usuario-error" style="color: red;"></div>
         </div>
 
         <div class="form-group">
             <label for="nuevo_nombre">Nuevo Nombre:</label>
-            <input type="text" class="form-control" name="nuevo_nombre" value="<?php echo $nombre_alumno; ?>" required>
+            <input type="text" class="form-control" name="nuevo_nombre" id="nuevo_nombre" value="<?php echo $nombre_alumno; ?>" required>
+            <div id="nombre-error" style="color: red;"></div>
         </div>
 
         <div class="form-group">
             <label for="nuevo_apellido">Nuevo Apellido:</label>
-            <input type="text" class="form-control" name="nuevo_apellido" value="<?php echo $apellido_alumno; ?>" required>
+            <input type="text" class="form-control" name="nuevo_apellido" id="nuevo_apellido" value="<?php echo $apellido_alumno; ?>" required>
+            <div id="apellido-error" style="color: red;"></div>
         </div>
 
         <div class="form-group">
@@ -120,14 +186,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-group">
             <label for="nuevo_email">Nuevo Email:</label>
-            <input type="email" class="form-control" name="nuevo_email" value="<?php echo $email_alumno; ?>" required>
+            <input type="email" class="form-control" name="nuevo_email" id="nuevo_email" value="<?php echo $email_alumno; ?>" required>
+            <div id="correo-error" style="color: red;"><?php echo $error_correo; ?></div>
         </div>
 
         <button type="submit" class="btn btn-primary" name="editar_alumno">Guardar Cambios</button>
+        <a href="gestionar_alumno.php" class="btn btn-secondary">Volver a la Gestión de Alumnos</a>
     </form>
 
-    <br>
-    <a href="gestionar_alumno.php" class="btn btn-secondary">Volver a la Gestión de Alumnos</a>
+   
+   
+    </div>
+
+
+        <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
 
     <!-- Agregamos la referencia a Bootstrap JS y Popper.js al final del cuerpo del documento -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -136,4 +211,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
-

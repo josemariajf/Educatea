@@ -82,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -95,20 +94,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         $(document).ready(function () {
             $('form').submit(function (event) {
+                // Validar que nombre, apellido y usuario no contengan números
+                if (!validateFields()) {
+                    $('#error-message').text('Nombre, apellido y usuario no pueden contener números.');
+                    event.preventDefault(); // Evitar que el formulario se envíe
+                } else {
+                    $('#error-message').text(''); // Limpiar el mensaje de error si los campos son válidos
+                }
+
+                // Verificar coincidencia de contraseñas
                 var nuevaContraseña = $('#nueva_contraseña').val();
                 var confirmarContraseña = $('#confirmar_contraseña').val();
 
                 if (nuevaContraseña !== confirmarContraseña) {
-                    alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
+                    $('#error-message').text('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
                     event.preventDefault(); // Evitar que el formulario se envíe
                 }
             });
+
+            // Función para validar que nombre, apellido y usuario no contengan números
+            function validateFields() {
+                var regex = /^[a-zA-Z]+$/;
+
+                var nuevoNombre = $('#nuevo_nombre').val();
+                var nuevoApellido = $('#nuevo_apellido').val();
+                var nuevoUsuario = $('#nuevo_usuario').val();
+
+                return regex.test(nuevoNombre) && regex.test(nuevoApellido) && regex.test(nuevoUsuario);
+            }
         });
     </script>
 </head>
 
 <body>
-<div class="jumbotron bg-primary text-center text-white">
+
+    <div class="jumbotron bg-primary text-center text-white">
+    <img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
         <h1 class="display-4">Educatea</h1>
     </div>
     <div class="container mt-5">
@@ -119,17 +140,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="form-group">
                 <label for="nuevo_usuario">Nuevo Usuario:</label>
-                <input type="text" class="form-control" name="nuevo_usuario" value="<?php echo $usuario_profesor; ?>" required>
+                <input type="text" class="form-control" name="nuevo_usuario" id="nuevo_usuario" value="<?php echo $usuario_profesor; ?>" required>
             </div>
 
             <div class="form-group">
                 <label for="nuevo_nombre">Nuevo Nombre:</label>
-                <input type="text" class="form-control" name="nuevo_nombre" value="<?php echo $nombre_profesor; ?>" required>
+                <input type="text" class="form-control" name="nuevo_nombre" id="nuevo_nombre" value="<?php echo $nombre_profesor; ?>" required>
             </div>
 
             <div class="form-group">
                 <label for="nuevo_apellido">Nuevo Apellido:</label>
-                <input type="text" class="form-control" name="nuevo_apellido" value="<?php echo $apellido_profesor; ?>" required>
+                <input type="text" class="form-control" name="nuevo_apellido" id="nuevo_apellido" value="<?php echo $apellido_profesor; ?>" required>
             </div>
 
             <div class="form-group">
@@ -147,13 +168,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" class="form-control" name="nuevo_email" value="<?php echo $email_profesor; ?>" required>
             </div>
 
+            <p id="error-message" style="color: red;"></p>
+
             <button type="submit" class="btn btn-primary" name="editar_profesor">Guardar Cambios</button>
+            <a href="gestionar_profesor.php" class="btn btn-secondary">Volver a la Gestión de Profesores</a>
         </form>
 
-        <div class="mt-3">
-            <a href="gestionar_profesor.php" class="btn btn-secondary">Volver a la Gestión de Profesores</a>
-        </div>
     </div>
+
+        <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
+
+
 
     <!-- Scripts de Bootstrap y jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

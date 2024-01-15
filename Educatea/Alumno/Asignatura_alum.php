@@ -30,7 +30,12 @@ $stmtClasesAlumno->close();
 
 // Verificar si el alumno tiene clases
 if (empty($clasesAlumno)) {
+    echo "<div class='container mt-4'>";
+    echo "<div class='alert alert-warning' role='alert'>";
     echo "<p>No hay clases asignadas al alumno.</p>";
+    echo "</div>";
+    echo "<a href='../Roles/inicio_alumno.php' class='btn btn-secondary mt-3'>Volver a la lista de asignaturas</a>";
+    echo "</div>";
     exit();
 }
 
@@ -55,6 +60,7 @@ if (!$stmtAsignaturas->execute()) {
 
 $resultadoAsignaturas = $stmtAsignaturas->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,6 +73,7 @@ $resultadoAsignaturas = $stmtAsignaturas->get_result();
 </head>
 <body>
     <div class="jumbotron bg-primary text-center text-white">
+        <img src="../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
         <h1 class="display-4">Educatea</h1>
     </div>
     <div class="container mt-4">
@@ -84,19 +91,30 @@ $resultadoAsignaturas = $stmtAsignaturas->get_result();
                 echo "<td>".$fila["asignatura_id"]."</td>";
                 echo "<td>".$fila["nombre_asignatura"]."</td>";
                 echo "<td>".$fila["codigo_asignatura"]."</td>";
-                
-                echo "<td><a class='btn btn-primary' href=tarea/ver_tarea.php?asignatura_id=".$fila["asignatura_id"]."'>Ver Tarea</a></td>";
-
+                echo "<td><a class='btn btn-primary' href='tarea/ver_tarea.php?asignatura_id=".$fila["asignatura_id"]."'>Ver Tarea</a></td>";
                 echo "</tr>";
             }
 
             echo "</tbody></table>";
         } else {
+            // Mostrar un mensaje con estilos de Bootstrap
+            echo "<div class='alert alert-warning' role='alert'>";
             echo "<p>No hay asignaturas disponibles para mostrar.</p>";
+            echo "</div>";
+
+            // Botón de volver con estilos de Bootstrap
+            echo "<a href='../Roles/inicio_alumno.php' class='btn btn-secondary mt-3'>Volver a la lista de asignaturas</a>";
         }
         ?>
-        <a href="../Roles/inicio_alumno.php" class="btn btn-secondary">Volver a inicio</a>
+        <a href='../Roles/inicio_alumno.php' class='btn btn-secondary mt-3'>Volver a la lista de asignaturas</a>
     </div>
+
+
+        <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
+
 
     <!-- Agregar el enlace al script de Bootstrap al final del cuerpo -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

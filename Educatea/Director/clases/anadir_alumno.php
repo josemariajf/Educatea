@@ -8,12 +8,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clase_id'])) {
     $clase_id = $_POST['clase_id'];
 }
 
-// Realiza la consulta para obtener los usuarios con rol 'alumno' que NO están en la clase
+// Realiza la consulta para obtener los usuarios con rol 'alumno' que NO están en la clase y NO están en la tabla clases_usuarios
 $query = "SELECT usuario_id, nombre, apellido FROM usuarios 
           WHERE rol_id = (SELECT rol_id FROM roles WHERE nombre_rol = 'alumno') 
           AND usuario_id NOT IN (
               SELECT cu.usuario_id FROM clases_usuarios cu
               WHERE cu.clase_id = $clase_id
+          )
+          AND usuario_id NOT IN (
+              SELECT usuario_id FROM clases_usuarios
           )";
 
 $result = $conexion->query($query);
@@ -47,6 +50,19 @@ if (!$resultUsuariosEnClase) {
     echo "Error al obtener los usuarios en la clase: " . mysqli_error($conexion);
     exit();
 }
+
+// Función para verificar si un usuario ya está en una clase
+function usuarioEnClase($usuarioId, $claseId, $conexion)
+{
+    $query = "SELECT 1 FROM clases_usuarios WHERE usuario_id = $usuarioId AND clase_id = $claseId";
+    $result = $conexion->query($query);
+
+    if ($result && $result->num_rows > 0) {
+        return true;
+    }
+
+    return false;
+}
 ?>
 
 <!DOCTYPE html>
@@ -60,6 +76,7 @@ if (!$resultUsuariosEnClase) {
 </head>
 <body>
     <div class="jumbotron bg-primary text-center text-white">
+    <img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
         <h1 class="display-4">Educatea</h1>
     </div>
 
@@ -76,7 +93,12 @@ if (!$resultUsuariosEnClase) {
                 <select name="alumnos_seleccionados[]" id="alumnos_seleccionados" multiple required class="form-control">
                     <?php
                     while ($fila = $result->fetch_assoc()) {
-                        echo "<option value='" . $fila['usuario_id'] . "'>" . $fila['nombre'] . " " . $fila['apellido'] . "</option>";
+                        // Verificar si el usuario ya está en la clase
+                        $usuarioId = $fila['usuario_id'];
+                        $enClase = usuarioEnClase($usuarioId, $clase_id, $conexion);
+
+                        // Agregar la opción y deshabilitar si ya está en la clase
+                        echo "<option value='" . $usuarioId . "' " . ($enClase ? "disabled" : "") . ">" . $fila['nombre'] . " " . $fila['apellido'] . "</option>";
                     }
                     ?>
                 </select>
@@ -101,7 +123,7 @@ if (!$resultUsuariosEnClase) {
             </div>
         </form>
 
-        <a href="gestionar_clases.php" class="btn btn-link mt-3">Volver a la gestión</a>
+        <a href="gestionar_clases.php" class="btn btn-secondary mt-3">Volver a la gestión</a>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -150,5 +172,11 @@ if (!$resultUsuariosEnClase) {
             }
         }
     </script>
+
+        <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
+    
 </body>
 </html>

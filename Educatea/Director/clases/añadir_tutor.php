@@ -14,25 +14,24 @@ $mensaje = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $clase_id = $_POST['clase_id'];
     if(isset($_POST['tutor_id'])){
-    $tutor_id = $_POST['tutor_id'];
-    }else{
-    $tutor_id = 0;
-}
+        $tutor_id = $_POST['tutor_id'];
+    } else {
+        $tutor_id = 0;
+    }
     if (empty($clase_id) || empty($tutor_id)) {
         $mensaje = 'Todos los campos son obligatorios.';
     } else {
-        // Verificar si ya existe un tutor asignado a la clase
-        $tutorExistente = obtenerTutorDeClase($clase_id);
+       // Verificar si ya existe un tutor asignado a otra clase
+    $tutorExistente = tutorAsignadoOtraClase($tutor_id, $clase_id);
 
-        if ($tutorExistente) {
-            // Si ya hay un tutor asignado, actualizar el tutor
-            actualizarTutorDeClase($clase_id, $tutor_id);
-            $mensaje = 'Tutor actualizado exitosamente en la clase.';
-        } else {
-            // Si no hay un tutor asignado, asignar el tutor
-            asignarTutorAClase($clase_id, $tutor_id);
-            $mensaje = 'Tutor asignado exitosamente a la clase.';
-        }
+    if ($tutorExistente) {
+        // Si ya hay un tutor asignado, mostrar el mensaje
+        $mensaje = $tutorExistente;
+    } else {
+        // Si no hay un tutor asignado, asignar el tutor
+        asignarTutorAClase($clase_id, $tutor_id);
+        $mensaje = 'Tutor asignado exitosamente a la clase.';
+    }
     }
 }
 
@@ -50,8 +49,12 @@ $tutores = obtenerUsuariosPorRol(2);
     <!-- Agrega la referencia a Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
-<body class="container mt-5">
-
+<body >
+<div class="jumbotron bg-primary text-center text-white">
+    <img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
+        <h1 class="display-4">Educatea</h1>
+    </div>
+    <div class="container mt-5">
     <h2 class="mb-4">Asignar Tutor a Clase</h2>
 
     <form action="" method="post">
@@ -87,6 +90,13 @@ $tutores = obtenerUsuariosPorRol(2);
         echo "<p class='mt-3 alert alert-info'>{$mensaje}</p>";
     }
     ?>
+    </div>
+
+        <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
+
 
     <!-- Agrega la referencia a Bootstrap JS y Popper.js -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -94,4 +104,3 @@ $tutores = obtenerUsuariosPorRol(2);
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
-

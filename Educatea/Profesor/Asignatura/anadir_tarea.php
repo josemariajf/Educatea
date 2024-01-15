@@ -84,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <div class="jumbotron bg-primary text-center text-white">
+    <img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
         <h1 class="display-4">Educatea</h1>
     </div>
 
@@ -124,6 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="Asignatura.php" class="btn btn-link mt-3">Volver a inicio</a>
     </div>
 
+
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -140,6 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.getElementById("fecha_vencimiento").setAttribute("min", fechaActual);
         });
     </script>
+
+    <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
 </body>
 
 </html>

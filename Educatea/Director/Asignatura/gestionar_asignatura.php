@@ -43,6 +43,7 @@ $resultadoAsignaturas = $conexion->query($queryAsignaturas);
 
 <body class="bg-light">
 <div class="jumbotron bg-primary text-center text-white">
+<img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
         <h1 class="display-4">Educatea</h1>
     </div>
     <div class="container mt-5">
@@ -65,10 +66,12 @@ $resultadoAsignaturas = $conexion->query($queryAsignaturas);
                         <td><?php echo $rowAsignatura['asignatura_id']; ?></td>
                         <td><?php echo $rowAsignatura['nombre_asignatura']; ?></td>
                         <td><?php echo $rowAsignatura['codigo_asignatura']; ?></td>
+                        
                         <td>
                             <a href='editar_asignatura.php?id=<?php echo $rowAsignatura['asignatura_id']; ?>' class="btn btn-warning btn-sm mr-2">Editar</a>
                             <a href='eliminar_asignatura.php?id=<?php echo $rowAsignatura['asignatura_id']; ?>' class="btn btn-danger btn-sm mr-2">Eliminar</a>
                             <a href='añadir_asignatura.php?id_asignatura=<?php echo $rowAsignatura['asignatura_id']; ?>' class="btn btn-success btn-sm">Añadir a Clase</a>
+                            <a href='asignatura_alumno.php?id_asignatura=<?php echo $rowAsignatura['asignatura_id']; ?>' class="btn btn-info btn-sm">Ver Alumnos</a>
                         </td>
                     </tr>
                 <?php
@@ -79,9 +82,15 @@ $resultadoAsignaturas = $conexion->query($queryAsignaturas);
 
         <div class="mt-3">
             <a href="crear_asignatura.php" class="btn btn-success">Añadir Asignatura</a>
-            <a href="../../Roles/inicio_director.php" class="btn btn-link">Volver a Inicio</a>
+            <a href="../../Roles/inicio_director.php" class="btn btn-secondary">Volver a Inicio</a>
         </div>
     </div>
+
+
+         <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
 
     <!-- Scripts de Bootstrap y jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

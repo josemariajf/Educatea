@@ -29,6 +29,7 @@ if ($resultadoArchivo->num_rows > 0) {
     readfile($urlArchivo);
 } else {
     echo "<div class='alert alert-warning' role='alert'>No se encontró el archivo para descargar.</div>";
+    echo" <a href='tarea.php ' class='btn btn-secondary mt-3'>Volver a tareas</a>";
 }
 
 $stmtArchivo->close();

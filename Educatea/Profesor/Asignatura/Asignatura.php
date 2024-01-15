@@ -67,6 +67,7 @@ $resultadoAsignaturas = $stmt->get_result();
 </head>
 <body>
     <div class="jumbotron bg-primary text-center text-white">
+    <img src="../../img/Logo_educatea.png" alt="Logo de Educatea" style="position: absolute; top: 10px; left: 10px; max-width: 100px; max-height: 100px;">
         <h1 class="display-4">Educatea</h1>
     </div>
     <div class="container mt-4">
@@ -97,6 +98,13 @@ $resultadoAsignaturas = $stmt->get_result();
         <a href="../../Roles/inicio_profesor.php" class="btn btn-secondary">Volver a inicio</a>
     </div>
 
+
+    <!--fixed-bottom de Bootstrap para fijar el footer en la parte inferior de la página. -->
+    <footer class="fixed-bottom bg-dark text-white text-center p-2">
+        <p>&copy; 2024 Educatea. Todos los derechos reservados.</p>
+    </footer>
+
+    
     <!-- Agregar el enlace al script de Bootstrap al final del cuerpo -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
